@@ -2,10 +2,7 @@
 
 /* eslint-env mocha */
 
-const {parallel} = require('async')
 const Utils = require('./utils.peer')
-const pull = require('pull-stream')
-const proto = require('../src/proto')
 const promisify = require('promisify-es6')
 
 const chai = require('chai')
@@ -41,6 +38,11 @@ describe('discovery', () => {
   it('can\'t discover client1@hello from client1', async () => {
     const res = await discover(client1, 'hello')
     expect(res).to.have.lengthOf(0)
+  })
+
+  it('dial client2->client1', async () => {
+    const res = await discover(client2, 'hello')
+    await promisify(client2.swarm.dial.bind(client2.swarm, res[0]))()
   })
 
   it('register client2@<GLOBAL>', async () => {
