@@ -7,6 +7,8 @@ const pull = require('pull-stream')
 const ImmutableStore = require('./store/immutable')
 const RPC = require('./rpc')
 
+const noop = () => {}
+
 class Server {
   constructor (opt) {
     if (!opt) opt = {}
@@ -16,8 +18,8 @@ class Server {
     this.gcTime = opt.gcIntv || 60 * 1000
   }
 
-  start () {
-    this.gcIntv = setInterval(this.gc.bind(this), this.gcTime)
+  start (cb = noop) {
+    // this.gcIntv = setInterval(this.gc.bind(this), this.gcTime)
     this.swarm.handle('/p2p/rendezvous/1.0.0', (proto, conn) => {
       conn.getPeerInfo((err, pi) => {
         if (err) return log(err)
@@ -31,12 +33,14 @@ class Server {
         )
       })
     })
+    cb()
   }
 
-  stop () {
+  stop (cb = noop) {
     clearInterval(this.gcIntv)
     // TODO: clear vars, shutdown conns, etc.
     this.swarm.unhandle('/p2p/rendezvous/1.0.0')
+    cb()
   }
 
   gc () {
