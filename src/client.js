@@ -135,11 +135,21 @@ class Client {
   register (ns, peer, ttl, cb) {
     if (typeof ttl === 'function') {
       cb = ttl
-      ttl = 0
+      if (Number.isInteger(peer)) {
+        ttl = peer
+        peer = null
+      } else {
+        ttl = 0
+      }
     }
+
     if (typeof peer === 'function') {
       ttl = 0
       cb = peer
+      peer = null
+    }
+
+    if (!peer) {
       peer = this.swarm.peerInfo
     }
 

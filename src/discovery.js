@@ -33,13 +33,13 @@ class RendezvousDiscovery extends EE {
     }
   }
   // TODO: https://github.com/libp2p/specs/issues/47
-  register(ns) {
+  register(ns, ttl) {
     if (!ns) {
       ns = null // need cannonical form of "empty"
     }
     log('register', ns)
     this._discover[ns] = true
-    this._client.register(ns, noop)
+    this._client.register(ns, ttl, noop)
   }
   unregister(ns) {
     if (!ns) {
