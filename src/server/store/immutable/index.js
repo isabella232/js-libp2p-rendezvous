@@ -2,6 +2,9 @@
 
 const { Map } = require('immutable')
 
+const debug = require('debug')
+const log = debug('libp2p:rendezvous:store')
+
 // Helper for checking if a peer has the neccessary properties
 const validatePeerRecord = (peerRecord) => {
   // Should validate that this is a PeerInfo instead
@@ -84,6 +87,7 @@ const addPeer = (store, peerRecord) => {
 
 // Removes a peer from a peer table within a namespace
 const removePeerFromNamespace = (store, peerTableName, peerID) => {
+  log('cleaning up expired peer %s', peerID)
   // Get a version of the peer table we can modify
   let newPeerTable = getNamespaces(store).get(peerTableName)
   // remove the Peer from it
@@ -98,6 +102,7 @@ const removePeerFromNamespace = (store, peerTableName, peerID) => {
 const removePeer = (store, peerID) => {
   // We made a modification, lets increment the revision
   store = incrementRevision(store)
+  log('removing peer %s', peerID)
   // Return the new store with new values
   return store.set('global_namespace', store.get('global_namespace').delete(peerID))
 }
@@ -131,7 +136,7 @@ const clearExpiredFromNamespace = (store, peerTableName, currentTime) => {
     expiresAt.setSeconds(expiresAt.getSeconds() + v.get('ttl'))
 
     // Get amount of seconds diff with current time
-    const diffInSeconds = (expiresAt - currentTime) / 1000
+    const diffInSeconds = (expiresAt.getTime() - currentTime) / 1000
 
     // If it's less than zero, peer has expired and we should remove it
     if (diffInSeconds < 0) {
