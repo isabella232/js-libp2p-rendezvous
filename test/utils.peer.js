@@ -11,7 +11,7 @@ const SECIO = require('libp2p-secio')
 
 const defaultAddrs = process.toString() === '[object process]' ? ['/ip4/127.0.0.1/tcp/0/ws'] : [] // don't try to create ws-server in browser
 const defaultServerAddrs = ['/ip4/127.0.0.1/tcp/5334/ws']
-const {Discovery, Server, Client} = require('../src')
+const {Discovery, Server} = require('../src')
 
 const Utils = module.exports = {
   createSwarm: (id, addrs, lp2pOpt, post) => new Promise((resolve, reject) => {
@@ -61,7 +61,8 @@ const Utils = module.exports = {
         enabled: true
       }
     }, (swarm) => {
-      rendezvous = new Discovery(swarm, conf || {})
+      rendezvous = new Discovery()
+      rendezvous.init(swarm, conf || {})
     })
     rendezvous.start()
     await promisify(swarm.dial.bind(swarm, await Utils.createServerPeerInfo()))()
