@@ -8,10 +8,6 @@ const Client = require('./client')
 const EE = require('events').EventEmitter
 
 class RendezvousDiscovery extends EE {
-  static get tag () {
-    return 'rendezvous'
-  }
-
   constructor() {
     super()
     this.swarm = null
@@ -69,4 +65,5 @@ class RendezvousDiscovery extends EE {
   }
 }
 
-module.exports = RendezvousDiscovery
+exports = module.exports = RendezvousDiscovery
+exports.tag = 'RendezvousDiscovery'
