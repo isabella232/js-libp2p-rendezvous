@@ -8,12 +8,19 @@ const Client = require('./client')
 const EE = require('events').EventEmitter
 
 class RendezvousDiscovery extends EE {
-  constructor(swarm, opt) {
+  static get tag () {
+    return 'rendezvous'
+  }
+
+  constructor() {
     super()
-    this._client = new Client(swarm, opt)
+    this.swarm = null
+    this._client = null
     this._discover = {}
+  }
+  init (swarm, opt) {
     this.swarm = swarm
-    this.tag = 'rendezvous'
+    this._client = new Client(swarm, opt)
   }
   start(cb) {
     log('start')
